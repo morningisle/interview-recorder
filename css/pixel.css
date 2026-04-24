@@ -39,18 +39,7 @@ button, input, select, textarea {
     margin: 8px;
 }
 
-/* 模拟像素锯齿边角 (不使用 border-radius) */
-.pixel-border::before {
-    content: "";
-    position: absolute;
-    top: calc(var(--pixel-size) * -1);
-    left: calc(var(--pixel-size) * -1);
-    right: calc(var(--pixel-size) * -1);
-    bottom: calc(var(--pixel-size) * -1);
-    border: solid var(--pixel-bg) var(--pixel-size);
-    pointer-events: none;
-    z-index: 1;
-}
+/* 移除模拟像素锯齿边角，保持简洁 */
 
 /* 按钮样式：3 帧动画 (默认/悬停/点击) */
 .btn-pixel {
@@ -93,6 +82,7 @@ button, input, select, textarea {
     font-size: 16px;
     outline: none;
     position: relative;
+    color-scheme: dark; /* 确保日期选择器等原生组件在黑色背景下可见 */
 }
 
 .input-pixel::placeholder {
@@ -109,16 +99,7 @@ h1, h2, h3, h4, .pixel-title {
     text-shadow: none !important;
 }
 
-/* CRT 显示器扫描线效果 */
-.input-pixel::after {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-    background-size: 100% 4px, 3px 100%;
-    pointer-events: none;
-    opacity: 0.3;
-}
+/* 移除之前的扫描线效果，避免干扰输入和选择 */
 
 /* 进度条 ▓▓░░ 字符样式 */
 #loading-text {
