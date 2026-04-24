@@ -759,7 +759,7 @@ function initWrongQuestions() {
                 </div>
                 <div class="question-card__footer" style="margin-top: 10px;">
                     <div class="question-card__tags">
-                        ${question.company ? `<span class="tag tag--company">🏢 ${escapeHtml(question.company)}</span>` : ''}
+                        ${question.company ? `<span class="tag tag--company">${escapeHtml(question.company)}</span>` : ''}
                         <span class="tag tag--category">${escapeHtml(question.category || '未分类')}</span>
                     </div>
                 </div>

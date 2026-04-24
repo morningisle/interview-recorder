@@ -101,9 +101,9 @@ function renderInterviewCard(interview) {
             ${renderStars(interview.evaluation)}
         </div>
         <div style="display: flex; gap: 8px;">
-            <button class="btn-pixel btn-pixel--secondary" style="flex: 1; padding: 8px; font-size: 12px;" data-action="view">VIEW</button>
-            <button class="btn-pixel btn-pixel--secondary" style="flex: 1; padding: 8px; font-size: 12px;" data-action="edit">EDIT</button>
-            <button class="btn-pixel btn-pixel--danger" style="flex: 1; padding: 8px; font-size: 12px;" data-action="delete">DEL</button>
+            <button class="btn-pixel btn-pixel--secondary" style="flex: 1; padding: 8px; font-size: 12px;" data-action="view">查看</button>
+            <button class="btn-pixel btn-pixel--secondary" style="flex: 1; padding: 8px; font-size: 12px;" data-action="edit">编辑</button>
+            <button class="btn-pixel btn-pixel--danger" style="flex: 1; padding: 8px; font-size: 12px;" data-action="delete">删除</button>
         </div>
     `;
 
@@ -144,7 +144,6 @@ export function renderInterviewList(interviews, filters = {}) {
     if (filtered.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-state__icon">📋</div>
                 <h3 class="empty-state__title">暂无面试记录</h3>
                 <p class="empty-state__desc">点击"新增记录"按钮添加您的第一条面试记录</p>
             </div>
@@ -240,8 +239,10 @@ export function updateStarRating(rating) {
         const starValue = parseInt(star.dataset.star);
         if (starValue <= rating) {
             addClass(star, 'active');
+            star.style.color = 'var(--pixel-yellow)';
         } else {
             removeClass(star, 'active');
+            star.style.color = 'var(--pixel-dark)';
         }
     });
 }
@@ -253,11 +254,22 @@ export function initStarRating() {
     const container = $('#star-rating');
     if (!container) return;
 
+    // 清空并重新生成星级按钮，确保类名和属性正确
+    container.innerHTML = `
+        <span class="star-btn" data-star="1" style="cursor: pointer; padding: 0 8px; display: inline-block;">★</span>
+        <span class="star-btn" data-star="2" style="cursor: pointer; padding: 0 8px; display: inline-block;">★</span>
+        <span class="star-btn" data-star="3" style="cursor: pointer; padding: 0 8px; display: inline-block;">★</span>
+        <span class="star-btn" data-star="4" style="cursor: pointer; padding: 0 8px; display: inline-block;">★</span>
+        <span class="star-btn" data-star="5" style="cursor: pointer; padding: 0 8px; display: inline-block;">★</span>
+    `;
+
     const stars = $$$('.star-btn', container);
     const input = $('#interview-evaluation');
 
     stars.forEach(star => {
-        on(star, 'click', () => {
+        on(star, 'click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             const rating = parseInt(star.dataset.star);
             if (input) input.value = rating;
             updateStarRating(rating);
@@ -268,9 +280,9 @@ export function initStarRating() {
             stars.forEach(s => {
                 const starValue = parseInt(s.dataset.star);
                 if (starValue <= rating) {
-                    addClass(s, 'active');
+                    s.style.color = 'var(--pixel-yellow)';
                 } else {
-                    removeClass(s, 'active');
+                    s.style.color = 'var(--pixel-dark)';
                 }
             });
         });
@@ -280,6 +292,10 @@ export function initStarRating() {
         const currentRating = parseInt(input?.value) || 3;
         updateStarRating(currentRating);
     });
+
+    // 初始化显示
+    const initialRating = parseInt(input?.value) || 3;
+    updateStarRating(initialRating);
 }
 
 /**

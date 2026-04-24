@@ -41,14 +41,14 @@ function renderQuestionCard(question) {
             <div style="font-size: 16px; line-height: 1.5; flex-grow: 1; font-weight: bold;">${escapeHtml(question.content || '')}</div>
         </div>
         <div style="margin-bottom: 16px;">
-            ${question.company ? `<span class="tag-pixel" style="background: var(--pixel-yellow);">🏢 ${escapeHtml(question.company)}</span>` : ''}
-            <span class="tag-pixel" style="background: var(--pixel-teal);">📂 ${escapeHtml(question.category || '未分类')}</span>
-            <span class="tag-pixel" style="background: var(--pixel-red); color: white;">⚡ ${DIFFICULTY_NAMES[question.difficulty] || '中等'}</span>
+            ${question.company ? `<span class="tag-pixel" style="background: var(--pixel-yellow);">${escapeHtml(question.company)}</span>` : ''}
+            <span class="tag-pixel" style="background: var(--pixel-teal);">${escapeHtml(question.category || '未分类')}</span>
+            <span class="tag-pixel" style="background: var(--pixel-red); color: white;">${DIFFICULTY_NAMES[question.difficulty] || '中等'}</span>
         </div>
         <div style="display: flex; gap: 8px;">
-            <button class="btn-pixel btn-pixel--secondary" style="flex: 1; padding: 8px; font-size: 12px;" data-action="view">VIEW</button>
-            <button class="btn-pixel btn-pixel--secondary" style="flex: 1; padding: 8px; font-size: 12px;" data-action="edit">EDIT</button>
-            <button class="btn-pixel btn-pixel--danger" style="flex: 1; padding: 8px; font-size: 12px;" data-action="delete">DEL</button>
+            <button class="btn-pixel btn-pixel--secondary" style="flex: 1; padding: 8px; font-size: 12px;" data-action="view">查看</button>
+            <button class="btn-pixel btn-pixel--secondary" style="flex: 1; padding: 8px; font-size: 12px;" data-action="edit">编辑</button>
+            <button class="btn-pixel btn-pixel--danger" style="flex: 1; padding: 8px; font-size: 12px;" data-action="delete">删除</button>
         </div>
     `;
 
@@ -102,7 +102,6 @@ export function renderQuestionList(questions, filters = {}) {
     if (filtered.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-state__icon">📚</div>
                 <h3 class="empty-state__title">暂无题目</h3>
                 <p class="empty-state__desc">点击"添加题目"按钮创建您的第一个面试题库</p>
             </div>
@@ -235,7 +234,7 @@ export function getQuestionDetailHTML(id) {
                 <p class="view-detail__value" style="white-space: pre-wrap;">${escapeHtml(question.answer || '未记录')}</p>
             </div>
             <div class="view-detail__section" style="border-left: 4px solid var(--color-success); padding-left: 12px; background: var(--color-bg-hover);">
-                <h4 class="view-detail__section-title">✨ 优化后的回答</h4>
+                <h4 class="view-detail__section-title">优化后的回答</h4>
                 <p class="view-detail__value" style="white-space: pre-wrap;">${escapeHtml(question.optimizedAnswer || '暂无优化回答，点击“编辑”添加')}</p>
             </div>
         </div>
