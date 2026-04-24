@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="面试记录与复盘 - 管理您的面试经历，分析面试趋势">
+    <meta name="theme-color" content="#2563eb">
+    <title>面试记录与复盘</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/theme-dark.css" id="theme-stylesheet" disabled>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+    <header class="header">
+        <div class="header__container">
+            <h1 class="header__title">
+                <span class="header__icon" aria-hidden="true">📋</span>
+                面试记录与复盘
+            </h1>
+            <nav class="header__nav" role="navigation" aria-label="主导航">
+                <ul class="header__nav-list">
+                    <li><button class="header__nav-btn is-active" data-tab="interview" aria-selected="true" aria-controls="panel-interview">面试记录</button></li>
+                    <li><button class="header__nav-btn" data-tab="question" aria-selected="false" aria-controls="panel-question">题库管理</button></li>
+                    <li><button class="header__nav-btn" data-tab="analysis" aria-selected="false" aria-controls="panel-analysis">复盘分析</button></li>
+                </ul>
+            </nav>
+            <div class="header__actions">
+                <button class="header__action-btn" id="btn-import" aria-label="导入数据">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span>导入</span>
+                </button>
+                <button class="header__action-btn" id="btn-export-json" title="导出 JSON 数据包，用于分享或备份">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+                    <span>备份</span>
+                </button>
+                <button class="header__action-btn" id="btn-export" title="导出 Markdown 报告，用于复盘阅读">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>导出</span>
+                </button>
+                <button class="header__action-btn header__action-btn--theme" id="btn-theme" aria-label="切换主题">
+                    <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    <span class="sr-only">切换主题</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="main">
+        <section class="tab-panel is-active" id="panel-interview" role="tabpanel" aria-labelledby="tab-interview">
+            <div class="panel-header">
+                <h2 class="panel-title">面试记录</h2>
+                <button class="btn btn--primary" id="btn-add-interview">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    新增记录
+                </button>
+            </div>
+            <div class="interview-filters">
+                <div class="filter-group">
+                    <label for="filter-company" class="filter-label">公司</label>
+                    <input type="text" id="filter-company" class="filter-input" placeholder="筛选公司">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-position" class="filter-label">职位</label>
+                    <input type="text" id="filter-position" class="filter-input" placeholder="筛选职位">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-status" class="filter-label">状态</label>
+                    <select id="filter-status" class="filter-select">
+                        <option value="">全部</option>
+                        <option value="pending">待反馈</option>
+                        <option value="passed">通过</option>
+                        <option value="failed">未通过</option>
+                    </select>
+                </div>
+                <button class="btn btn--secondary" id="btn-clear-filters">清除筛选</button>
+            </div>
+            <div class="interview-list" id="interview-list" role="list" aria-label="面试记录列表">
+            </div>
+        </section>
+
+        <section class="tab-panel" id="panel-question" role="tabpanel" aria-labelledby="tab-question" hidden>
+            <div class="panel-header">
+                <h2 class="panel-title">题库管理</h2>
+                <div class="panel-actions">
+                    <div id="batch-actions-area" hidden style="display: inline-flex; gap: 8px; align-items: center; margin-right: 16px; padding: 4px 12px; background: var(--color-bg-hover); border-radius: var(--radius-md);">
+                        <span id="selected-count" style="font-size: 13px; font-weight: 500;">已选 0 项</span>
+                        <select id="select-batch-category" class="filter-select" style="min-height: 32px; font-size: 12px;">
+                            <option value="">批量修改类别...</option>
+                        </select>
+                        <button class="btn btn--secondary btn--small" id="btn-batch-delete">批量删除</button>
+                    </div>
+                    <button class="btn btn--secondary" id="btn-manage-categories" style="margin-right: 8px;">管理类别</button>
+                    <button class="btn btn--primary" id="btn-add-question">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        添加题目
+                    </button>
+                </div>
+            </div>
+            <div class="question-filters">
+                <div class="filter-group">
+                    <label for="filter-q-company" class="filter-label">公司</label>
+                    <input type="text" id="filter-q-company" class="filter-input" placeholder="筛选公司">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-q-position" class="filter-label">职位</label>
+                    <input type="text" id="filter-q-position" class="filter-input" placeholder="筛选职位">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-category" class="filter-label">问题类别</label>
+                    <select id="filter-category" class="filter-select">
+                        <option value="">全部类别</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-difficulty" class="filter-label">难度</label>
+                    <select id="filter-difficulty" class="filter-select">
+                        <option value="">全部难度</option>
+                        <option value="easy">简单</option>
+                        <option value="medium">中等</option>
+                        <option value="hard">困难</option>
+                    </select>
+                </div>
+                <div class="filter-group filter-group--search">
+                    <label for="filter-question" class="filter-label">搜索</label>
+                    <input type="text" id="filter-question" class="filter-input" placeholder="搜索题目内容">
+                </div>
+            </div>
+            <div class="question-list-header" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="check-all-questions" style="width: 18px; height: 18px; cursor: pointer;">
+                <label for="check-all-questions" style="font-size: 14px; cursor: pointer;">全选</label>
+            </div>
+            <div class="question-list" id="question-list" role="list" aria-label="题库列表">
+            </div>
+        </section>
+
+        <section class="tab-panel" id="panel-analysis" role="tabpanel" aria-labelledby="tab-analysis" hidden>
+            <div class="panel-header">
+                <h2 class="panel-title">复盘分析</h2>
+            </div>
+            <div class="stats-grid">
+                <article class="stat-card">
+                    <h3 class="stat-card__title">总面试次数</h3>
+                    <p class="stat-card__value" id="stat-total">0</p>
+                </article>
+                <article class="stat-card">
+                    <h3 class="stat-card__title">通过次数</h3>
+                    <p class="stat-card__value" id="stat-passed">0</p>
+                </article>
+                <article class="stat-card">
+                    <h3 class="stat-card__title">通过率</h3>
+                    <p class="stat-card__value" id="stat-rate">0%</p>
+                </article>
+                <article class="stat-card">
+                    <h3 class="stat-card__title">题库总数</h3>
+                    <p class="stat-card__value" id="stat-questions">0</p>
+                </article>
+            </div>
+
+            <div class="analysis-section">
+                <h3 class="analysis-section__title">面试趋势（近12个月）</h3>
+                <div class="chart-container">
+                    <div class="chart-tabs">
+                        <button class="chart-tab is-active" data-chart="line">折线图</button>
+                        <button class="chart-tab" data-chart="bar">柱状图</button>
+                    </div>
+                    <canvas id="trend-chart" width="800" height="300" aria-label="面试趋势图表"></canvas>
+                </div>
+            </div>
+
+            <div class="analysis-section">
+                <h3 class="analysis-section__title">按公司统计</h3>
+                <div class="company-stats" id="company-stats"></div>
+            </div>
+
+            <div class="analysis-section">
+                <h3 class="analysis-section__title">按职位统计</h3>
+                <div class="position-stats" id="position-stats"></div>
+            </div>
+
+            <div class="analysis-section">
+                <h3 class="analysis-section__title">错题本</h3>
+                <p class="analysis-section__desc">显示所有已记录“优化后的回答”的题目，方便复盘总结</p>
+                <button class="btn btn--secondary" id="btn-wrong-questions">查看错题本</button>
+                <div class="wrong-questions-list" id="wrong-questions-list"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__container">
+            <p class="footer__text">面试记录与复盘 v1.0.0</p>
+            <p class="footer__shortcuts">
+                <kbd>Ctrl</kbd>+<kbd>K</kbd> 新增记录 |
+                <kbd>Ctrl</kbd>+<kbd>E</kbd> 导出报告 |
+                <kbd>Ctrl</kbd>+<kbd>B</kbd> 数据备份 |
+                <kbd>Ctrl</kbd>+<kbd>T</kbd> 切换主题
+            </p>
+        </div>
+    </footer>
+
+    <div class="modal" id="modal-interview" hidden role="dialog" aria-labelledby="modal-interview-title" aria-modal="true">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2 class="modal__title" id="modal-interview-title">新增面试记录</h2>
+                <button class="modal__close" id="modal-interview-close" aria-label="关闭弹窗">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </header>
+            <form class="modal__form" id="form-interview">
+                <input type="hidden" id="interview-id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="interview-company" class="form-label">公司名 <span class="required">*</span></label>
+                        <input type="text" id="interview-company" class="form-input" required maxlength="100" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="interview-position" class="form-label">职位 <span class="required">*</span></label>
+                        <input type="text" id="interview-position" class="form-input" required maxlength="100" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="interview-round" class="form-label">面试轮次</label>
+                        <select id="interview-round" class="form-select">
+                            <option value="1">一面</option>
+                            <option value="2">二面</option>
+                            <option value="3">三面</option>
+                            <option value="4">四面</option>
+                            <option value="5">HR面</option>
+                            <option value="6">终面</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="interview-date" class="form-label">时间 <span class="required">*</span></label>
+                        <input type="datetime-local" id="interview-date" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="interview-location" class="form-label">地点</label>
+                        <input type="text" id="interview-location" class="form-input" maxlength="200" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="interview-interviewer" class="form-label">面试官</label>
+                        <input type="text" id="interview-interviewer" class="form-input" maxlength="100" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="interview-status" class="form-label">结果状态</label>
+                        <select id="interview-status" class="form-select">
+                            <option value="pending">待反馈</option>
+                            <option value="passed">通过</option>
+                            <option value="failed">未通过</option>
+                        </select>
+                    </div>
+                    <div class="form-group form-group--full">
+                        <label for="interview-transcript" class="form-label">录音文字稿 (支持自动识别 Q&A)</label>
+                        <div style="margin-bottom: 8px;">
+                            <a href="https://www.doubao.com/" target="_blank" rel="noopener noreferrer" class="link-hint" style="font-size: 12px; color: var(--color-primary); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                                <span>🌐 使用豆包进行问答梳理</span>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 8"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            </a>
+                        </div>
+                        <textarea id="interview-transcript" class="form-textarea" rows="6" placeholder="粘贴面试录音转文字的内容，例如：
+问：请介绍一下你自己。
+答：我是一名...
+问：你对我们公司了解吗？"></textarea>
+                        <button type="button" class="btn btn--secondary btn--small" id="btn-parse-transcript" style="margin-top: 8px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            识别并归纳到题库
+                        </button>
+                    </div>
+                    <div class="form-group form-group--full">
+                        <label for="interview-evaluation" class="form-label">自我评价</label>
+                        <div class="star-rating" id="star-rating" role="radiogroup" aria-label="自我评价星级">
+                            <button type="button" class="star-btn" data-star="1" aria-label="1星">★</button>
+                            <button type="button" class="star-btn" data-star="2" aria-label="2星">★</button>
+                            <button type="button" class="star-btn" data-star="3" aria-label="3星">★</button>
+                            <button type="button" class="star-btn" data-star="4" aria-label="4星">★</button>
+                            <button type="button" class="star-btn" data-star="5" aria-label="5星">★</button>
+                        </div>
+                        <input type="hidden" id="interview-evaluation" value="3">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn--secondary" id="btn-cancel-interview">取消</button>
+                    <button type="submit" class="btn btn--primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-question" hidden role="dialog" aria-labelledby="modal-question-title" aria-modal="true">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2 class="modal__title" id="modal-question-title">添加题目</h2>
+                <button class="modal__close" id="modal-question-close" aria-label="关闭弹窗">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </header>
+            <form class="modal__form" id="form-question">
+                <input type="hidden" id="question-id">
+                <div class="form-grid">
+                    <div class="form-group form-group--full">
+                        <label for="question-content" class="form-label">题目内容 <span class="required">*</span></label>
+                        <textarea id="question-content" class="form-textarea" rows="4" required maxlength="1000" placeholder="输入面试题目"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="question-company" class="form-label">来源公司</label>
+                        <input type="text" id="question-company" class="form-input" maxlength="100" placeholder="例如：字节跳动">
+                    </div>
+                    <div class="form-group">
+                        <label for="question-position" class="form-label">职位 <span class="required">*</span></label>
+                        <input type="text" id="question-position" class="form-input" required maxlength="100" placeholder="例如：前端开发工程师">
+                    </div>
+                    <div class="form-group">
+                        <label for="question-category" class="form-label">问题类别 (可手动输入新类别)</label>
+                        <input type="text" id="question-category" class="form-input" maxlength="100" placeholder="输入新类别或从列表选择" list="category-datalist">
+                        <datalist id="category-datalist"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label for="question-difficulty" class="form-label">难度</label>
+                        <select id="question-difficulty" class="form-select">
+                            <option value="easy">简单</option>
+                            <option value="medium" selected>中等</option>
+                            <option value="hard">困难</option>
+                        </select>
+                    </div>
+                    <div class="form-group form-group--full">
+                        <label for="question-answer" class="form-label">原始回答 (面试现场)</label>
+                        <textarea id="question-answer" class="form-textarea" rows="3" maxlength="2000" placeholder="记录面试时的原始回答"></textarea>
+                    </div>
+                    <div class="form-group form-group--full">
+                        <label for="question-optimized-answer" class="form-label">优化后的回答 (复盘总结)</label>
+                        <textarea id="question-optimized-answer" class="form-textarea" rows="5" maxlength="2000" placeholder="在此输入总结和优化后的最佳回答"></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn--secondary" id="btn-cancel-question">取消</button>
+                    <button type="submit" class="btn btn--primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-view" hidden role="dialog" aria-labelledby="modal-view-title" aria-modal="true">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content modal__content--large">
+            <header class="modal__header">
+                <h2 class="modal__title" id="modal-view-title">面试详情</h2>
+                <button class="modal__close" id="modal-view-close" aria-label="关闭弹窗">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </header>
+            <div class="modal__body" id="view-content">
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-manage-categories" hidden role="dialog" aria-labelledby="modal-categories-title" aria-modal="true">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2 class="modal__title" id="modal-categories-title">管理问题类别</h2>
+                <button class="modal__close" id="modal-categories-close" aria-label="关闭弹窗">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </header>
+            <div class="modal__body">
+                <div class="form-group">
+                    <label for="new-category-input" class="form-label">新增类别</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="new-category-input" class="form-input" placeholder="输入类别名称">
+                        <button class="btn btn--primary" id="btn-add-category-save">添加</button>
+                    </div>
+                </div>
+                <div class="category-list-manage" id="category-list-manage" style="margin-top: 16px; max-height: 300px; overflow-y: auto;">
+                    <!-- 类别列表将在这里渲染 -->
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn--primary" id="btn-close-categories">完成</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="file-import" accept=".json" hidden aria-hidden="true">
+
+    <div class="toast" id="toast" hidden role="alert" aria-live="polite"></div>
+
+    <div class="sr-only" aria-live="assertive" id="sr-announce"></div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

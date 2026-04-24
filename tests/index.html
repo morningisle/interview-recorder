@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>面试记录与复盘 - 单元测试</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.19.0.css">
+    <style>
+        #qunit { font-size: 14px; }
+        #qunit-fixture { position: absolute; top: -9999px; left: -9999px; }
+    </style>
+</head>
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script src="https://code.jquery.com/qunit/qunit-2.19.0.js"></script>
+    <script type="module">
+        import {
+            escapeHtml,
+            escapeRegex,
+            isRequired,
+            isLengthInRange,
+            validateCompany,
+            validatePosition,
+            validateDate,
+            validateRating,
+            validateInterview,
+            validateQuestionContent,
+            validateCategory,
+            validateQuestion,
+            validateImportData,
+            validateFileSize,
+            validateFileType
+        } from '../js/utils/validator.js';
+
+        import {
+            $,
+            $$,
+            $$$,
+            createElement,
+            empty,
+            remove,
+            html,
+            text,
+            show,
+            hide,
+            toggle,
+            addClass,
+            removeClass,
+            toggleClass,
+            hasClass,
+            on,
+            off,
+            delegate,
+            debounce,
+            throttle,
+            generateId
+        } from '../js/utils/dom.js';
+
+        import {
+            getInterviews,
+            saveInterviews,
+            addInterview,
+            updateInterview,
+            deleteInterview,
+            getInterviewById,
+            getQuestions,
+            saveQuestions,
+            addQuestion,
+            updateQuestion,
+            deleteQuestion,
+            getQuestionById,
+            getTheme,
+            saveTheme,
+            exportData,
+            importData,
+            clearAll,
+            getStatistics
+        } from '../js/modules/storage.js';
+
+        import {
+            Chart,
+            createTrendChartData
+        } from '../js/modules/chart.js';
+
+        QUnit.module('Validator Module', function() {
+            QUnit.test('escapeHtml - should escape HTML special characters', function(assert) {
+                assert.equal(escapeHtml('<script>'), '&lt;script&gt;', 'Should escape < and >');
+                assert.equal(escapeHtml('"double quotes"'), '&quot;double quotes&quot;', 'Should escape double quotes');
+                assert.equal(escapeHtml("'single quotes'"), '&#x27;single quotes&#x27;', 'Should escape single quotes');
+                assert.equal(escapeHtml('&amp;'), '&amp;amp;', 'Should escape ampersand');
+                assert.equal(escapeHtml('`backtick`'), '&#x60;backtick&#x60;', 'Should escape backtick');
+                assert.equal(escapeHtml(123), '123', 'Should handle numbers');
+                assert.equal(escapeHtml(null), '', 'Should handle null');
+                assert.equal(escapeHtml(undefined), '', 'Should handle undefined');
+            });
+
+            QUnit.test('escapeRegex - should escape regex special characters', function(assert) {
+                assert.equal(escapeRegex('(test)'), '\\(test\\)', 'Should escape parentheses');
+                assert.equal(escapeRegex('*'), '\\*', 'Should escape asterisk');
+                assert.equal(escapeRegex('+'), '\\+', 'Should escape plus');
+                assert.equal(escapeRegex('[test]'), '\\[test\\]', 'Should escape brackets');
+            });
+
+            QUnit.test('isRequired - should validate required fields', function(assert) {
+                assert.ok(isRequired('test'), 'Should return true for non-empty string');
+                assert.ok(isRequired(123), 'Should return true for number');
+                assert.ok(isRequired(true), 'Should return true for boolean true');
+                assert.ok(!isRequired(''), 'Should return false for empty string');
+                assert.ok(!isRequired(null), 'Should return false for null');
+                assert.ok(!isRequired(undefined), 'Should return false for undefined');
+                assert.ok(!isRequired('   '), 'Should return false for whitespace only');
+            });
+
+            QUnit.test('isLengthInRange - should validate string length', function(assert) {
+                assert.ok(isLengthInRange('test', 1, 10), 'Should return true for valid length');
+                assert.ok(!isLengthInRange('', 1, 10), 'Should return false for too short');
+                assert.ok(!isLengthInRange('very long string', 1, 5), 'Should return false for too long');
+                assert.ok(isLengthInRange('', 0, 0), 'Should handle zero min/max');
+                assert.ok(!isLengthInRange(123, 1, 10), 'Should return false for non-string');
+            });
+
+            QUnit.test('validateCompany - should validate company name', function(assert) {
+                const result1 = validateCompany('Test Company');
+                assert.ok(result1.valid, 'Should be valid for normal company name');
+                assert.equal(result1.error, '', 'Should have no error');
+
+                const result2 = validateCompany('');
+                assert.ok(!result2.valid, 'Should be invalid for empty string');
+                assert.ok(result2.error.length > 0, 'Should have error message');
+
+                const result3 = validateCompany('A'.repeat(101));
+                assert.ok(!result3.valid, 'Should be invalid for too long name');
+            });
+
+            QUnit.test('validatePosition - should validate position', function(assert) {
+                const result1 = validatePosition('Frontend Engineer');
+                assert.ok(result1.valid, 'Should be valid for normal position');
+                assert.equal(result1.error, '', 'Should have no error');
+
+                const result2 = validatePosition('');
+                assert.ok(!result2.valid, 'Should be invalid for empty string');
+            });
+
+            QUnit.test('validateDate - should validate date', function(assert) {
+                const pastDate = new Date();
+                pastDate.setFullYear(pastDate.getFullYear() - 1);
+                const result1 = validateDate(pastDate.toISOString());
+                assert.ok(result1.valid, 'Should be valid for past date');
+
+                const result2 = validateDate('');
+                assert.ok(!result2.valid, 'Should be invalid for empty string');
+
+                const result3 = validateDate('invalid-date');
+                assert.ok(!result3.valid, 'Should be invalid for invalid format');
+
+                const futureDate = new Date();
+                futureDate.setFullYear(futureDate.getFullYear() + 1);
+                const result4 = validateDate(futureDate.toISOString());
+                assert.ok(!result4.valid, 'Should be invalid for future date');
+            });
+
+            QUnit.test('validateRating - should validate rating', function(assert) {
+                assert.ok(validateRating(3).valid, 'Should be valid for 3');
+                assert.ok(validateRating(1).valid, 'Should be valid for 1');
+                assert.ok(validateRating(5).valid, 'Should be valid for 5');
+                assert.ok(!validateRating(0).valid, 'Should be invalid for 0');
+                assert.ok(!validateRating(6).valid, 'Should be invalid for 6');
+                assert.ok(!validateRating('abc').valid, 'Should be invalid for non-number');
+            });
+
+            QUnit.test('validateInterview - should validate complete interview object', function(assert) {
+                const validInterview = {
+                    company: 'Test Company',
+                    position: 'Engineer',
+                    date: new Date().toISOString(),
+                    evaluation: 4
+                };
+                const result1 = validateInterview(validInterview);
+                assert.ok(result1.valid, 'Should be valid for complete interview');
+
+                const invalidInterview = {
+                    company: '',
+                    position: '',
+                    date: 'invalid'
+                };
+                const result2 = validateInterview(invalidInterview);
+                assert.ok(!result2.valid, 'Should be invalid for incomplete interview');
+                assert.ok(Object.keys(result2.errors).length > 0, 'Should have errors');
+            });
+
+            QUnit.test('validateQuestionContent - should validate question content', function(assert) {
+                assert.ok(validateQuestionContent('What is closure?').valid, 'Should be valid for normal question');
+                assert.ok(!validateQuestionContent('').valid, 'Should be invalid for empty');
+                assert.ok(!validateQuestionContent('A'.repeat(1001)).valid, 'Should be invalid for too long');
+            });
+
+            QUnit.test('validateCategory - should validate category', function(assert) {
+                assert.ok(validateCategory('product-manager').valid, 'Should be valid for product-manager');
+                assert.ok(validateCategory('solution').valid, 'Should be valid for solution');
+                assert.ok(validateCategory('invalid').valid === false, 'Should be invalid for unknown');
+            });
+
+            QUnit.test('validateImportData - should validate import data structure', function(assert) {
+                const validData = {
+                    interviews: [],
+                    questions: []
+                };
+                assert.ok(validateImportData(validData).valid, 'Should be valid for correct structure');
+
+                const invalidData = {
+                    interviews: 'not-array'
+                };
+                assert.ok(!validateImportData(invalidData).valid, 'Should be invalid for wrong interviews type');
+
+                assert.ok(!validateImportData(null).valid, 'Should be invalid for null');
+                assert.ok(!validateImportData({}).valid, 'Should be invalid for missing arrays');
+            });
+
+            QUnit.test('validateFileSize - should validate file size', function(assert) {
+                assert.ok(validateFileSize(1024), 'Should be valid for 1KB');
+                assert.ok(validateFileSize(1024 * 1024), 'Should be valid for 1MB');
+                assert.ok(validateFileSize(2 * 1024 * 1024), 'Should be valid for 2MB');
+                assert.ok(!validateFileSize(3 * 1024 * 1024), 'Should be invalid for > 2MB');
+                assert.ok(!validateFileSize(0), 'Should be invalid for 0');
+            });
+        });
+
+        QUnit.module('DOM Module', function() {
+            QUnit.test('generateId - should generate unique IDs', function(assert) {
+                const id1 = generateId('test');
+                const id2 = generateId('test');
+                assert.notEqual(id1, id2, 'IDs should be unique');
+                assert.ok(id1.startsWith('test-'), 'Should start with prefix');
+            });
+
+            QUnit.test('createElement - should create DOM elements', function(assert) {
+                const div = createElement('div', { className: 'test-class' });
+                assert.equal(div.tagName, 'DIV', 'Should create div element');
+                assert.equal(div.className, 'test-class', 'Should set class');
+
+                const input = createElement('input', {
+                    type: 'text',
+                    value: 'test'
+                });
+                assert.equal(input.type, 'text', 'Should set attributes');
+            });
+
+            QUnit.test('addClass/removeClass/hasClass - should manage classes', function(assert) {
+                const el = document.createElement('div');
+                addClass(el, 'class1', 'class2');
+                assert.ok(hasClass(el, 'class1'), 'Should have class1');
+                assert.ok(hasClass(el, 'class2'), 'Should have class2');
+
+                removeClass(el, 'class1');
+                assert.ok(!hasClass(el, 'class1'), 'Should not have class1');
+                assert.ok(hasClass(el, 'class2'), 'Should still have class2');
+            });
+
+            QUnit.test('toggleClass - should toggle classes', function(assert) {
+                const el = document.createElement('div');
+                assert.ok(toggleClass(el, 'test'), 'Should add class when not present');
+                assert.ok(hasClass(el, 'test'), 'Should have class after toggle');
+
+                assert.ok(!toggleClass(el, 'test'), 'Should remove class when present');
+                assert.ok(!hasClass(el, 'test'), 'Should not have class after second toggle');
+
+                assert.ok(toggleClass(el, 'test', true), 'Should force add');
+                assert.ok(hasClass(el, 'test'), 'Should have class when forced add');
+
+                assert.ok(!toggleClass(el, 'test', false), 'Should force remove');
+                assert.ok(!hasClass(el, 'test'), 'Should not have class when forced remove');
+            });
+
+            QUnit.test('show/hide/toggle - should control visibility', function(assert) {
+                const el = document.createElement('div');
+                el.hidden = true;
+
+                show(el);
+                assert.ok(!el.hidden, 'Should show element');
+
+                hide(el);
+                assert.ok(el.hidden, 'Should hide element');
+
+                el.hidden = true;
+                toggle(el);
+                assert.ok(!el.hidden, 'Should toggle to visible');
+            });
+        });
+
+        QUnit.module('Storage Module', function() {
+            QUnit.test('getInterviews/saveInterviews - should manage interviews in localStorage', function(assert) {
+                const testData = [
+                    { id: 'test-1', company: 'Company A', position: 'Engineer' }
+                ];
+
+                saveInterviews(testData);
+                const retrieved = getInterviews();
+
+                assert.equal(retrieved.length, 1, 'Should have one interview');
+                assert.equal(retrieved[0].company, 'Company A', 'Should have correct company');
+
+                saveInterviews([]);
+            });
+
+            QUnit.test('addInterview - should add new interview with generated ID', function(assert) {
+                const initial = getInterviews();
+                const initialLength = initial.length;
+
+                const newInterview = addInterview({
+                    company: 'New Company',
+                    position: 'Developer',
+                    status: 'pending'
+                });
+
+                assert.ok(newInterview.id, 'Should have generated ID');
+                assert.equal(newInterview.company, 'New Company', 'Should have correct company');
+                assert.ok(newInterview.createdAt, 'Should have createdAt timestamp');
+
+                const afterAdd = getInterviews();
+                assert.equal(afterAdd.length, initialLength + 1, 'Should have one more interview');
+
+                deleteInterview(newInterview.id);
+            });
+
+            QUnit.test('updateInterview - should update existing interview', function(assert) {
+                const newInterview = addInterview({
+                    company: 'Original Company',
+                    position: 'Developer',
+                    status: 'pending'
+                });
+
+                const updated = updateInterview(newInterview.id, {
+                    company: 'Updated Company',
+                    status: 'passed'
+                });
+
+                assert.ok(updated, 'Should return updated interview');
+                assert.equal(updated.company, 'Updated Company', 'Should have updated company');
+                assert.equal(updated.status, 'passed', 'Should have updated status');
+                assert.ok(updated.updatedAt, 'Should have updatedAt timestamp');
+
+                deleteInterview(newInterview.id);
+            });
+
+            QUnit.test('deleteInterview - should delete interview', function(assert) {
+                const newInterview = addInterview({
+                    company: 'To Delete',
+                    position: 'Developer'
+                });
+
+                const result = deleteInterview(newInterview.id);
+                assert.ok(result, 'Should return true on successful delete');
+
+                const deleted = getInterviewById(newInterview.id);
+                assert.ok(!deleted, 'Should not find deleted interview');
+
+                const notExist = deleteInterview('non-existent-id');
+                assert.ok(!notExist, 'Should return false for non-existent ID');
+            });
+
+            QUnit.test('getQuestions/saveQuestions - should manage questions in localStorage', function(assert) {
+                const testData = [
+                    { id: 'q-1', content: 'What is closure?', category: 'frontend' }
+                ];
+
+                saveQuestions(testData);
+                const retrieved = getQuestions();
+
+                assert.equal(retrieved.length, 1, 'Should have one question');
+                assert.equal(retrieved[0].content, 'What is closure?', 'Should have correct content');
+
+                saveQuestions([]);
+            });
+
+            QUnit.test('addQuestion - should add new question', function(assert) {
+                const initial = getQuestions();
+                const initialLength = initial.length;
+
+                const newQuestion = addQuestion({
+                    content: 'Explain hoisting',
+                    category: 'frontend',
+                    difficulty: 'medium'
+                });
+
+                assert.ok(newQuestion.id, 'Should have generated ID');
+                assert.equal(newQuestion.content, 'Explain hoisting', 'Should have correct content');
+
+                const afterAdd = getQuestions();
+                assert.equal(afterAdd.length, initialLength + 1, 'Should have one more question');
+
+                deleteQuestion(newQuestion.id);
+            });
+
+            QUnit.test('updateQuestion - should update existing question', function(assert) {
+                const newQuestion = addQuestion({
+                    content: 'Original question',
+                    category: 'frontend',
+                    difficulty: 'easy'
+                });
+
+                const updated = updateQuestion(newQuestion.id, {
+                    content: 'Updated question',
+                    difficulty: 'hard'
+                });
+
+                assert.ok(updated, 'Should return updated question');
+                assert.equal(updated.content, 'Updated question', 'Should have updated content');
+                assert.equal(updated.difficulty, 'hard', 'Should have updated difficulty');
+
+                deleteQuestion(newQuestion.id);
+            });
+
+            QUnit.test('deleteQuestion - should delete question', function(assert) {
+                const newQuestion = addQuestion({
+                    content: 'To delete',
+                    category: 'frontend'
+                });
+
+                const result = deleteQuestion(newQuestion.id);
+                assert.ok(result, 'Should return true on successful delete');
+
+                const deleted = getQuestionById(newQuestion.id);
+                assert.ok(!deleted, 'Should not find deleted question');
+            });
+
+            QUnit.test('getTheme/saveTheme - should manage theme', function(assert) {
+                saveTheme('dark');
+                assert.equal(getTheme(), 'dark', 'Should save and retrieve dark theme');
+
+                saveTheme('light');
+                assert.equal(getTheme(), 'light', 'Should save and retrieve light theme');
+            });
+
+            QUnit.test('exportData - should export all data', function(assert) {
+                addInterview({ company: 'Export Co', position: 'Dev' });
+                addQuestion({ content: 'Export Q', category: 'frontend' });
+
+                const exported = exportData();
+
+                assert.ok(exported.version, 'Should have version');
+                assert.ok(exported.exportedAt, 'Should have export timestamp');
+                assert.ok(Array.isArray(exported.interviews), 'Should have interviews array');
+                assert.ok(Array.isArray(exported.questions), 'Should have questions array');
+
+                const ivw = exported.interviews.find(i => i.company === 'Export Co');
+                assert.ok(ivw, 'Should include added interview');
+
+                const q = exported.questions.find(q => q.content === 'Export Q');
+                assert.ok(q, 'Should include added question');
+
+                const allInterviews = getInterviews();
+                const lastInterview = allInterviews.find(i => i.company === 'Export Co');
+                if (lastInterview) deleteInterview(lastInterview.id);
+
+                const allQuestions = getQuestions();
+                const lastQuestion = allQuestions.find(q => q.content === 'Export Q');
+                if (lastQuestion) deleteQuestion(lastQuestion.id);
+            });
+
+            QUnit.test('importData - should import data', function(assert) {
+                const importPayload = {
+                    interviews: [
+                        { id: 'import-1', company: 'Import Co', position: 'Dev' }
+                    ],
+                    questions: [
+                        { id: 'import-q-1', content: 'Import question', category: 'frontend' }
+                    ]
+                };
+
+                importData(importPayload);
+
+                const ivw = getInterviews().find(i => i.id === 'import-1');
+                assert.ok(ivw, 'Should import interview');
+
+                const q = getQuestions().find(q => q.id === 'import-q-1');
+                assert.ok(q, 'Should import question');
+
+                deleteInterview('import-1');
+                deleteQuestion('import-q-1');
+            });
+
+            QUnit.test('getStatistics - should calculate correct statistics', function(assert) {
+                clearAll();
+
+                addInterview({ company: 'Stats Co', position: 'Dev', status: 'passed' });
+                addInterview({ company: 'Stats Co', position: 'Dev', status: 'passed' });
+                addInterview({ company: 'Stats Co', position: 'Dev', status: 'failed' });
+                addQuestion({ content: 'Q1', category: 'frontend' });
+                addQuestion({ content: 'Q2', category: 'backend' });
+                addQuestion({ content: 'Q3', category: 'frontend' });
+
+                const stats = getStatistics();
+
+                assert.equal(stats.total, 3, 'Should have 3 interviews');
+                assert.equal(stats.passed, 2, 'Should have 2 passed');
+                assert.equal(stats.failed, 1, 'Should have 1 failed');
+                assert.equal(stats.passRate, 67, 'Should calculate 67% pass rate');
+                assert.equal(stats.questionCount, 3, 'Should have 3 questions');
+
+                assert.ok(stats.companyStats['Stats Co'], 'Should have company stats');
+                assert.equal(stats.companyStats['Stats Co'].total, 3, 'Should have correct company total');
+                assert.equal(stats.companyStats['Stats Co'].passed, 2, 'Should have correct company passed');
+
+                assert.ok(stats.categoryStats['frontend'], 'Should have category stats');
+                assert.equal(stats.categoryStats['frontend'], 2, 'Should have 2 frontend questions');
+
+                clearAll();
+            });
+        });
+
+        QUnit.module('Chart Module', function() {
+            QUnit.test('createTrendChartData - should create proper chart data structure', function(assert) {
+                const monthlyStats = {
+                    '2024-01': { total: 5, passed: 3 },
+                    '2024-02': { total: 8, passed: 5 },
+                    '2024-03': { total: 3, passed: 2 }
+                };
+
+                const chartData = createTrendChartData(monthlyStats);
+
+                assert.ok(Array.isArray(chartData.labels), 'Should have labels array');
+                assert.ok(Array.isArray(chartData.datasets), 'Should have datasets array');
+                assert.equal(chartData.labels.length, 3, 'Should have 3 labels');
+                assert.equal(chartData.datasets.length, 2, 'Should have 2 datasets');
+
+                const totalDataset = chartData.datasets.find(d => d.label === '面试次数');
+                assert.ok(totalDataset, 'Should have total dataset');
+                assert.deepEqual(totalDataset.data, [5, 8, 3], 'Should have correct total data');
+
+                const passedDataset = chartData.datasets.find(d => d.label === '通过次数');
+                assert.ok(passedDataset, 'Should have passed dataset');
+                assert.deepEqual(passedDataset.data, [3, 5, 2], 'Should have correct passed data');
+            });
+
+            QUnit.test('Chart class - should initialize with canvas', function(assert) {
+                const canvas = document.createElement('canvas');
+                canvas.id = 'test-chart';
+                document.getElementById('qunit-fixture').appendChild(canvas);
+
+                const chart = new Chart('test-chart', { type: 'line' });
+
+                assert.ok(chart.canvas, 'Should have canvas element');
+                assert.ok(chart.ctx, 'Should have 2D context');
+                assert.equal(chart.width > 0, true, 'Should have width');
+                assert.equal(chart.height > 0, true, 'Should have height');
+
+                chart.destroy();
+            });
+
+            QUnit.test('Chart - should render with data', function(assert) {
+                const canvas = document.createElement('canvas');
+                canvas.id = 'test-chart-2';
+                document.getElementById('qunit-fixture').appendChild(canvas);
+
+                const chart = new Chart('test-chart-2');
+
+                const data = {
+                    labels: ['1月', '2月', '3月'],
+                    datasets: [
+                        { label: '测试', data: [10, 20, 15], color: '#2563eb' }
+                    ]
+                };
+
+                chart.render(data);
+                assert.ok(chart.data, 'Should store data');
+
+                chart.setType('bar');
+                chart.render(data);
+
+                chart.destroy();
+            });
+        });
+    </script>
+</body>
+</html>

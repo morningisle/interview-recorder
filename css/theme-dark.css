@@ -1,0 +1,215 @@
+body.dark {
+    --color-primary: #3b82f6;
+    --color-primary-hover: #2563eb;
+    --color-primary-light: #1e3a5f;
+    --color-secondary: #94a3b8;
+    --color-secondary-hover: #64748b;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-danger: #ef4444;
+    --color-bg: #0f172a;
+    --color-bg-card: #1e293b;
+    --color-bg-hover: #334155;
+    --color-text: #f1f5f9;
+    --color-text-secondary: #94a3b8;
+    --color-border: #334155;
+    --color-border-focus: #3b82f6;
+}
+
+body.dark {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+
+body.dark .header {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+}
+
+body.dark .header__title {
+    color: var(--color-text);
+}
+
+body.dark .header__nav-btn {
+    color: var(--color-text-secondary);
+}
+
+body.dark .header__nav-btn:hover {
+    background: var(--color-bg-hover);
+    color: var(--color-text);
+}
+
+body.dark .header__action-btn {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+    color: var(--color-text-secondary);
+}
+
+body.dark .interview-card,
+body.dark .question-card,
+body.dark .stat-card,
+body.dark .analysis-section {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+}
+
+body.dark .interview-card:hover,
+body.dark .question-card:hover {
+    border-color: var(--color-primary);
+}
+
+body.dark .panel-title,
+body.dark .interview-card__company,
+body.dark .question-card__content,
+body.dark .analysis-section__title,
+body.dark .stat-card__title,
+body.dark .stats-item__name,
+body.dark .view-detail__value {
+    color: var(--color-text);
+}
+
+body.dark .interview-card__meta,
+body.dark .interview-card__position,
+body.dark .question-card__meta,
+body.dark .stat-card__value,
+body.dark .stats-item__count,
+body.dark .view-detail__label,
+body.dark .analysis-section__desc,
+body.dark .footer__text,
+body.dark .footer__shortcuts {
+    color: var(--color-text-secondary);
+}
+
+body.dark .btn--secondary {
+    background: var(--color-bg-hover);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+body.dark .btn--secondary:hover {
+    background: var(--color-border);
+}
+
+body.dark .filter-input,
+body.dark .filter-select {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+    color: var(--color-text);
+}
+
+body.dark .form-input,
+body.dark .form-select,
+body.dark .form-textarea {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+    color: var(--color-text);
+}
+
+body.dark .modal__content {
+    background: var(--color-bg-card);
+}
+
+body.dark .modal__header {
+    border-color: var(--color-border);
+}
+
+body.dark .modal__title {
+    color: var(--color-text);
+}
+
+body.dark .modal__close {
+    color: var(--color-text-secondary);
+}
+
+body.dark .modal__close:hover {
+    background: var(--color-bg-hover);
+}
+
+body.dark .footer {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+}
+
+body.dark .tag--category {
+    background: var(--color-primary-light);
+}
+
+body.dark .stats-item {
+    background: var(--color-bg);
+}
+
+body.dark .stats-item__bar {
+    background: var(--color-bg-hover);
+}
+
+body.dark .chart-tab {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+    color: var(--color-text-secondary);
+}
+
+body.dark .interview-card__status--pending {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+body.dark .interview-card__status--passed {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+}
+
+body.dark .interview-card__status--failed {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
+body.dark .tag--difficulty-easy {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+}
+
+body.dark .tag--difficulty-medium {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+body.dark .tag--difficulty-hard {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
+body.dark .star-btn {
+    color: var(--color-border);
+}
+
+body.dark .star-btn.active {
+    color: #fbbf24;
+}
+
+body.dark .skip-link {
+    background: var(--color-primary);
+}
+
+body.dark .toast {
+    background: var(--color-text);
+    color: var(--color-bg);
+}
+
+body.dark .view-detail__section {
+    border-color: var(--color-border);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not(.light-force) {
+        --color-primary: #3b82f6;
+        --color-primary-hover: #2563eb;
+        --color-primary-light: #1e3a5f;
+        --color-secondary: #94a3b8;
+        --color-bg: #0f172a;
+        --color-bg-card: #1e293b;
+        --color-bg-hover: #334155;
+        --color-text: #f1f5f9;
+        --color-text-secondary: #94a3b8;
+        --color-border: #334155;
+    }
+}
