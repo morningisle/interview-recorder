@@ -31,29 +31,24 @@ const DIFFICULTY_NAMES = {
  */
 function renderQuestionCard(question) {
     const card = createElement('article', {
-        className: 'question-card',
+        className: 'card-pixel question-card',
         dataset: { id: question.id }
     });
 
     card.innerHTML = `
-        <div class="question-card__header">
-            <input type="checkbox" class="question-select" data-id="${question.id}" style="width: 18px; height: 18px; cursor: pointer; margin-right: 12px; margin-top: 4px;">
-            <div class="question-card__content">${escapeHtml(question.content || '')}</div>
+        <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px;">
+            <input type="checkbox" class="question-select" data-id="${question.id}" style="width: 20px; height: 20px; flex-shrink: 0;">
+            <div style="font-size: 16px; line-height: 1.5; flex-grow: 1; font-weight: bold;">${escapeHtml(question.content || '')}</div>
         </div>
-        <div class="question-card__footer">
-            <div class="question-card__tags">
-                ${question.company ? `<span class="tag tag--company" style="background: var(--color-bg-hover); color: var(--color-text-secondary); border: 1px solid var(--color-border);">🏢 ${escapeHtml(question.company)}</span>` : ''}
-                <span class="tag tag--position" style="background: var(--color-bg-hover); border: 1px solid var(--color-border);">${escapeHtml(question.position || '未指定职位')}</span>
-                <span class="tag tag--category">📂 ${escapeHtml(question.category || '未分类')}</span>
-                <span class="tag tag--difficulty-${question.difficulty || 'medium'}">
-                    ${DIFFICULTY_NAMES[question.difficulty] || '中等'}
-                </span>
-            </div>
-            <div class="question-card__actions">
-                <button class="btn btn--secondary btn--small" data-action="view" aria-label="查看">查看</button>
-                <button class="btn btn--secondary btn--small" data-action="edit" aria-label="编辑">编辑</button>
-                <button class="btn btn--danger btn--small" data-action="delete" aria-label="删除">删除</button>
-            </div>
+        <div style="margin-bottom: 16px;">
+            ${question.company ? `<span class="tag-pixel" style="background: var(--pixel-yellow);">🏢 ${escapeHtml(question.company)}</span>` : ''}
+            <span class="tag-pixel" style="background: var(--pixel-teal);">📂 ${escapeHtml(question.category || '未分类')}</span>
+            <span class="tag-pixel" style="background: var(--pixel-red); color: white;">⚡ ${DIFFICULTY_NAMES[question.difficulty] || '中等'}</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn-pixel btn-pixel--secondary" style="flex: 1; padding: 8px; font-size: 12px;" data-action="view">VIEW</button>
+            <button class="btn-pixel btn-pixel--secondary" style="flex: 1; padding: 8px; font-size: 12px;" data-action="edit">EDIT</button>
+            <button class="btn-pixel btn-pixel--danger" style="flex: 1; padding: 8px; font-size: 12px;" data-action="delete">DEL</button>
         </div>
     `;
 

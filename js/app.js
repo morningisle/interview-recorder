@@ -225,10 +225,10 @@ function initCategoryManagement() {
                     return;
                 }
                 if (confirm(`确定要删除类别“${cat}”吗？这将不会删除该类别下的题目，但题目将变为“未分类”。`)) {
-                    deleteCategory(cat);
-                    renderManageList();
-                    showToast('删除成功');
-                }
+                deleteCategory(cat);
+                renderManageList();
+                showToast('删除成功');
+            }
             } else if (btnRename) {
                 const oldName = btnRename.dataset.category;
                 const newName = prompt(`请输入类别“${oldName}”的新名称：`, oldName);
@@ -916,10 +916,6 @@ function initKeyboardShortcuts() {
                     e.preventDefault();
                     $('#btn-export-json')?.click();
                     break;
-                case 't':
-                    e.preventDefault();
-                    toggleTheme();
-                    break;
             }
         }
 
@@ -951,12 +947,43 @@ function announce(message) {
     }
 }
 
+function initLoadingScreen() {
+    const screen = $('#loading-screen');
+    const bar = $('#loading-bar');
+    const text = $('#loading-text');
+    let progress = 0;
+
+    const updateProgress = () => {
+        progress += Math.random() * 30;
+        if (progress > 100) progress = 100;
+        
+        if (bar) bar.style.width = `${progress}%`;
+        
+        if (text) {
+            const filled = Math.floor(progress / 10);
+            const empty = 10 - filled;
+            text.textContent = '▓'.repeat(filled) + '░'.repeat(empty) + ` ${Math.floor(progress)}%`;
+        }
+
+        if (progress < 100) {
+            setTimeout(updateProgress, 200 + Math.random() * 300);
+        } else {
+            setTimeout(() => {
+                if (screen) {
+                    screen.hidden = true;
+                    screen.style.display = 'none'; // 确保彻底消失，不遮挡点击
+                }
+            }, 500);
+        }
+    };
+
+    updateProgress();
+}
+
 function init() {
     console.log('应用正在初始化...');
+    initLoadingScreen();
     try {
-        initTheme();
-        console.log('主题初始化完成');
-        
         initNavigation();
         console.log('导航初始化完成');
         
@@ -989,11 +1016,6 @@ function init() {
         initChartTabs();
         initImportExport();
         initKeyboardShortcuts();
-
-        const themeBtn = $('#btn-theme');
-        if (themeBtn) {
-            on(themeBtn, 'click', toggleTheme);
-        }
 
         showToast('面试记录与复盘已加载', 2000);
         console.log('应用初始化全部完成');

@@ -78,46 +78,32 @@ function renderStars(rating) {
  */
 function renderInterviewCard(interview) {
     const card = createElement('article', {
-        className: 'interview-card',
+        className: 'card-pixel interview-card',
         dataset: { id: interview.id }
     });
 
     card.innerHTML = `
-        <div class="interview-card__header">
-            <div class="interview-card__info">
-                <h3 class="interview-card__company">${escapeHtml(interview.company || '未知公司')}</h3>
-                <p class="interview-card__position">${escapeHtml(interview.position || '未知职位')}</p>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+            <div>
+                <h3 style="margin: 0; font-size: 18px;">${escapeHtml(interview.company || 'UNKNOWN')}</h3>
+                <p style="margin: 4px 0; font-size: 14px; color: var(--pixel-red); font-weight: bold;">${escapeHtml(interview.position || 'N/A')}</p>
             </div>
-            <span class="interview-card__status interview-card__status--${interview.status || 'pending'}">
-                ${STATUS_NAMES[interview.status] || '待反馈'}
+            <span class="tag-pixel" style="background: ${interview.status === 'passed' ? 'var(--pixel-teal)' : interview.status === 'failed' ? 'var(--pixel-red)' : 'var(--pixel-yellow)'}">
+                ${STATUS_NAMES[interview.status] || 'WAIT'}
             </span>
         </div>
-        <div class="interview-card__meta">
-            <span class="interview-card__meta-item">
-                <span>📅</span> ${ROUND_NAMES[interview.round] || '一面'}
-            </span>
-            <span class="interview-card__meta-item">
-                <span>🕐</span> ${formatDate(interview.date)}
-            </span>
-            ${interview.location ? `
-            <span class="interview-card__meta-item">
-                <span>📍</span> ${escapeHtml(interview.location)}
-            </span>
-            ` : ''}
-            ${interview.interviewer ? `
-            <span class="interview-card__meta-item">
-                <span>👤</span> ${escapeHtml(interview.interviewer)}
-            </span>
-            ` : ''}
+        <div style="font-size: 14px; margin-bottom: 16px;">
+            <div>📅 ${ROUND_NAMES[interview.round] || '一面'}</div>
+            <div>🕐 ${formatDate(interview.date)}</div>
         </div>
-        <div class="interview-card__evaluation">
-            <span>自我评价：</span>
+        <div style="margin-bottom: 16px;">
+            <div style="font-size: 14px; margin-bottom: 4px;">RATING:</div>
             ${renderStars(interview.evaluation)}
         </div>
-        <div class="interview-card__actions">
-            <button class="btn btn--secondary btn--small" data-action="view" aria-label="查看详情">查看</button>
-            <button class="btn btn--secondary btn--small" data-action="edit" aria-label="编辑">编辑</button>
-            <button class="btn btn--danger btn--small" data-action="delete" aria-label="删除">删除</button>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn-pixel btn-pixel--secondary" style="flex: 1; padding: 8px; font-size: 12px;" data-action="view">VIEW</button>
+            <button class="btn-pixel btn-pixel--secondary" style="flex: 1; padding: 8px; font-size: 12px;" data-action="edit">EDIT</button>
+            <button class="btn-pixel btn-pixel--danger" style="flex: 1; padding: 8px; font-size: 12px;" data-action="delete">DEL</button>
         </div>
     `;
 

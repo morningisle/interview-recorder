@@ -8,14 +8,13 @@
  * @returns {Object} 颜色配置
  */
 function getColors() {
-    const isDark = document.body.classList.contains('dark');
     return {
-        text: isDark ? '#94a3b8' : '#64748b',
-        grid: isDark ? '#334155' : '#e2e8f0',
-        primary: '#2563eb',
-        primaryLight: isDark ? 'rgba(59, 130, 246, 0.2)' : 'rgba(37, 99, 235, 0.1)',
-        success: '#10b981',
-        background: isDark ? '#1e293b' : '#ffffff'
+        text: '#2C3E50',
+        grid: '#2C3E50',
+        primary: '#4ECDC4',
+        primaryLight: 'rgba(78, 205, 196, 0.2)',
+        success: '#FFE66D',
+        background: '#FFFFFF'
     };
 }
 
@@ -55,12 +54,13 @@ function drawLineChart(ctx, data, config) {
 
         const value = Math.round(maxValue - (valueRange / gridLines) * i);
         ctx.fillStyle = colors.text;
-        ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
         ctx.textAlign = 'right';
         ctx.fillText(value.toString() + '次', padding.left - 8, y + 4);
     }
 
     ctx.textAlign = 'center';
+    ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
     const labelStep = Math.ceil(labels.length / 12);
     labels.forEach((label, index) => {
         if (index % labelStep === 0) {
@@ -166,12 +166,13 @@ function drawBarChart(ctx, data, config) {
 
         const value = Math.round(maxValue - (valueRange / gridLines) * i);
         ctx.fillStyle = colors.text;
-        ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
         ctx.textAlign = 'right';
         ctx.fillText(value.toString() + '次', padding.left - 8, y + 4);
     }
 
     ctx.textAlign = 'center';
+    ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
     const barGroupWidth = chartWidth / labels.length;
     const barWidth = (barGroupWidth * 0.7) / datasets.length;
     const barGap = barGroupWidth * 0.15;
@@ -186,14 +187,12 @@ function drawBarChart(ctx, data, config) {
             const y = padding.top + chartHeight - barHeight;
 
             ctx.fillStyle = dataset.color || colors.primary;
-            ctx.beginPath();
-            ctx.roundRect(x, y, barWidth - 4, barHeight, [4, 4, 0, 0]);
-            ctx.fill();
+            ctx.fillRect(x, y, barWidth - 4, barHeight);
         });
 
         const labelX = groupX + (barWidth * datasets.length) / 2;
         ctx.fillStyle = colors.text;
-        ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
         ctx.save();
         ctx.translate(labelX, height - padding.bottom + 20);
         ctx.rotate(-Math.PI / 6);

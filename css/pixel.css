@@ -1,0 +1,220 @@
+:root {
+    --pixel-red: #FF6B6B;
+    --pixel-teal: #4ECDC4;
+    --pixel-yellow: #FFE66D;
+    --pixel-dark: #2C3E50;
+    --pixel-bg: #F7F7F7;
+    --pixel-white: #FFFFFF;
+    --pixel-size: 4px;
+    --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--pixel-bg);
+    color: var(--pixel-dark);
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    font-family: var(--font-main);
+}
+
+button, input, select, textarea {
+    font-family: var(--font-main) !important;
+    font-size: 16px;
+}
+
+/* 像素边框通用样式 - 禁用 box-shadow 和 border-radius */
+.pixel-border {
+    position: relative;
+    border: solid var(--pixel-dark) var(--pixel-size);
+    background: var(--pixel-white);
+    padding: 16px;
+    margin: 8px;
+}
+
+/* 模拟像素锯齿边角 (不使用 border-radius) */
+.pixel-border::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--pixel-size) * -1);
+    left: calc(var(--pixel-size) * -1);
+    right: calc(var(--pixel-size) * -1);
+    bottom: calc(var(--pixel-size) * -1);
+    border: solid var(--pixel-bg) var(--pixel-size);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 按钮样式：3 帧动画 (默认/悬停/点击) */
+.btn-pixel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border: solid var(--pixel-dark) var(--pixel-size);
+    background-color: var(--pixel-teal);
+    color: var(--pixel-dark);
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: bold;
+    position: relative;
+    transition: none;
+}
+
+.btn-pixel:hover {
+    background-color: var(--pixel-yellow);
+    transform: translateY(calc(var(--pixel-size) * -1));
+}
+
+.btn-pixel:active {
+    background-color: var(--pixel-red);
+    transform: translateY(var(--pixel-size));
+}
+
+.btn-pixel--primary { background-color: var(--pixel-teal); }
+.btn-pixel--secondary { background-color: var(--pixel-yellow); }
+.btn-pixel--danger { background-color: var(--pixel-red); }
+
+/* CRT 风格输入框 */
+.input-pixel {
+    width: 100%;
+    padding: 14px;
+    border: solid var(--pixel-dark) var(--pixel-size);
+    background-color: #000;
+    color: #FFFFFF; /* 改为白色文字 */
+    font-size: 16px;
+    outline: none;
+    position: relative;
+}
+
+.input-pixel::placeholder {
+    color: #666;
+}
+
+h1, h2, h3, h4, .pixel-title {
+    font-family: var(--font-main);
+    font-size: 20px !important;
+    font-weight: 800;
+    margin: 0 0 20px 0;
+    color: var(--pixel-dark);
+    text-transform: uppercase;
+    text-shadow: none !important;
+}
+
+/* CRT 显示器扫描线效果 */
+.input-pixel::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 4px, 3px 100%;
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+/* 进度条 ▓▓░░ 字符样式 */
+#loading-text {
+    letter-spacing: 4px;
+    font-family: 'Press Start 2P', cursive;
+}
+
+/* 移除所有过渡效果，改为即时响应，避免点击延迟感 */
+.btn-pixel, .input-pixel, .card-pixel {
+    transition: none !important;
+}
+
+.pixel-loader__bar {
+    height: 100%;
+    background-color: var(--pixel-teal);
+    width: 0%;
+    transition: width 0.5s steps(10);
+}
+
+/* 面板切换动效 */
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.is-active {
+    display: block;
+    animation: pixelFadeIn 0.3s steps(4);
+}
+
+@keyframes pixelFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 头部导航 */
+.header-pixel {
+    background-color: var(--pixel-dark);
+    color: var(--pixel-white);
+    padding: 24px;
+    border-bottom: solid var(--pixel-yellow) var(--pixel-size);
+}
+
+.header__nav-btn {
+    background: none;
+    border: none;
+    color: var(--pixel-white);
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 24px;
+}
+
+.header__nav-btn.is-active {
+    color: var(--pixel-yellow);
+    text-decoration: underline;
+}
+
+/* 列表卡片 */
+.card-pixel {
+    background: var(--pixel-white);
+    border: solid var(--pixel-dark) var(--pixel-size);
+    margin-bottom: 24px;
+    padding: 16px;
+}
+
+.tag-pixel {
+    display: inline-block;
+    padding: 6px 12px;
+    border: solid var(--pixel-dark) 2px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 8px;
+    margin-bottom: 4px;
+}
+
+/* 弹窗样式 */
+.modal-pixel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(44, 62, 80, 0.9); /* 这里虽用了rgba但仅为背景遮罩 */
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-pixel[hidden] {
+    display: none !important;
+}
+
+.modal-content-pixel {
+    background: var(--pixel-white);
+    border: solid var(--pixel-dark) var(--pixel-size);
+    padding: 32px;
+    max-width: 600px;
+    width: 90%;
+}
